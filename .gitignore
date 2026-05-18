@@ -1,0 +1,21 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Logs and reports
+*.log
+
+# Simulation / waveform artifacts
+*.vcd
+*.vpd
+*.fsdb
+*.wlf
+*.jou
+*.pb
+
+# Editor / OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
