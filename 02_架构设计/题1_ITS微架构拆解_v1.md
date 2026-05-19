@@ -40,7 +40,8 @@
 
 说明：
 
-- 题面写的是“只输入非零点”，实际硬件仍需要恢复到内部完整块布局
+- 题面不只是给输入值，还给了 `it_data_addr[11:0]`
+- 实际硬件需要利用 `it_data_addr` 将稀疏输入恢复到内部完整块布局
 - 这一层会直接影响后续 buffer 组织方式
 
 ### 3. `lfnst_core`
@@ -98,12 +99,14 @@
 
 - 将内部结果整理成 `光栅顺序`
 - 保证输出为 `4点/拍`
+- 按题面接口打包为 `it_data_out[39:0]`
+- 受 `it_data_out_req` 反压控制
 
 ## 推荐数据通路
 
 推荐用下面这条主链：
 
-`sparse_input -> TU buffer -> optional LFNST -> column 1D transform -> transpose buffer -> row 1D transform -> output reorder -> 4-point output`
+`it_info -> sparse_input(value+addr) -> TU buffer -> optional LFNST -> column 1D transform -> transpose buffer -> row 1D transform -> output reorder/pack -> 4-point output`
 
 这样做的好处：
 
@@ -152,4 +155,3 @@
   - 固定点位宽
   - 验证闭环
   - PPA 优化
-
