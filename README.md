@@ -10,6 +10,18 @@
 - 优先打通 `LFNST + IDCT/DCT8/DST7` 的参考模型
 - 建立可综合 RTL 骨架和自检验证框架
 
+## 当前状态
+
+- `LFNST`
+  - Python 参考模型已完成
+  - 矩阵提取脚本已完成
+  - ROM 化 RTL 和模块级自检 testbench 已通过
+- `DCT2 / DCT8 / DST7`
+  - 已开始补矩阵提取和 1D 参考模型
+  - `inverse_transform_tables.json` 已生成
+  - `DCT8/DST7 32-point` 当前为“附件前 16 行精确 + 后 16 行解析式补齐”
+  - 下一步进入 `IDCT2` 第一版 RTL
+
 ## 目录说明
 
 - [00_题面资料](./00_题面资料)
@@ -46,7 +58,7 @@
 ## 当前最小可落地路径
 
 1. 先做 `LFNST` 参考模型和 RTL
-2. 再做 `1D IDCT / IDCT8 / IDST7` 核
+2. 再做 `1D IDCT2 / IDCT8 / IDST7` 核
 3. 再包成 `2D ITS top`
 4. 最后补齐所有块大小、模式组合和吞吐优化
 
