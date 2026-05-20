@@ -26,7 +26,7 @@
   - `tb_idct2_1d_core.sv` 已通过 `VCS` 自检
   - 轻量 `UVM` 骨架已落地并通过 `VCS UVM` smoke 回归
   - 本轮验证记录已归档到 `09_reports`
-  - 下一步是串 `LFNST -> IDCT2`
+  - `4x4` 的 `LFNST -> 列向 IDCT2` 子链路已落地并通过 directed 联调
 
 ## 目录说明
 
