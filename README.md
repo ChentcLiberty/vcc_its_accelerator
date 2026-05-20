@@ -20,7 +20,12 @@
   - 已开始补矩阵提取和 1D 参考模型
   - `inverse_transform_tables.json` 已生成
   - `DCT8/DST7 32-point` 当前为“附件前 16 行精确 + 后 16 行解析式补齐”
-  - 下一步进入 `IDCT2` 第一版 RTL
+- `IDCT2`
+  - 第一版 `1D` RTL 已落地
+  - 对应的块级设计说明和验证说明已补
+  - `tb_idct2_1d_core.sv` 已通过 `VCS` 自检
+  - 本轮验证记录已归档到 `09_reports`
+  - 下一步是串 `LFNST -> IDCT2`
 
 ## 目录说明
 
