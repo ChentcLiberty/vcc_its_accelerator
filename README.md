@@ -24,6 +24,7 @@
   - 第一版 `1D` RTL 已落地
   - 对应的块级设计说明和验证说明已补
   - `tb_idct2_1d_core.sv` 已通过 `VCS` 自检
+  - 轻量 `UVM` 骨架已落地并通过 `VCS UVM` smoke 回归
   - 本轮验证记录已归档到 `09_reports`
   - 下一步是串 `LFNST -> IDCT2`
 

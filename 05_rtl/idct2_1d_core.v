@@ -1,5 +1,3 @@
-`timescale 1ns/1ps
-
 module idct2_1d_core #(
     parameter integer DATA_W      = 16,
     parameter integer COEFF_W     = 8,

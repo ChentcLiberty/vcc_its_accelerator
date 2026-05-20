@@ -27,6 +27,7 @@ python3 08_scripts/gen_idct2_memh.py \
 
 ```bash
 /home/jjt/install/synopsys/vcs/vcs/T-2022.06/bin/vcs -full64 -sverilog \
+  -timescale=1ns/1ps \
   05_rtl/idct2_1d_core.v \
   06_tb/tb_idct2_1d_core.sv \
   -o /tmp/idct2_vcs_build/idct2_1d_core_simv
@@ -41,6 +42,11 @@ python3 08_scripts/gen_idct2_memh.py \
 ```text
 PASS tb_idct2_1d_core
 ```
+
+补充说明：
+
+- 在统一 `IDCT2` 直接 testbench 和 UVM 环境的 timescale 口径后，已按上面命令重新回归
+- 重新回归结果仍然为 `PASS tb_idct2_1d_core`
 
 ## 本轮覆盖点
 

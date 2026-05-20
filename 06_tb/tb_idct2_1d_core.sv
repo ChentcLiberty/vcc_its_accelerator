@@ -1,5 +1,3 @@
-`timescale 1ns/1ps
-
 module tb_idct2_1d_core;
 
     localparam int DATA_W = 16;
