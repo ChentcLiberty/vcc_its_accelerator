@@ -75,3 +75,8 @@
 - `per-column IDCT2`
 
 链路级 `out_req` 反压检查没有放在这一版 directed testbench 里硬塞；后续更合适的做法是沿用当前 `IDCT2` 的方法学思路，给这条子链路补一版轻量 `UVM` 环境，再把 hold 行为放到 assertion 和 scoreboard 里检查。
+
+这一步现在已经补上，对应文件见：
+
+- [题1_LFNST到IDCT2列链路UVM验证说明_v1.md](./题1_LFNST到IDCT2列链路UVM验证说明_v1.md)
+- [题1_LFNST到IDCT2列链路UVM验证记录_v1.md](../09_reports/题1_LFNST到IDCT2列链路UVM验证记录_v1.md)

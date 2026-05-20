@@ -27,6 +27,7 @@
   - 轻量 `UVM` 骨架已落地并通过 `VCS UVM` smoke 回归
   - 本轮验证记录已归档到 `09_reports`
   - `4x4` 的 `LFNST -> 列向 IDCT2` 子链路已落地并通过 directed 联调
+  - 这条子链路的轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
 
 ## 目录说明
 
