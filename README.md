@@ -30,7 +30,9 @@
   - 这条子链路的轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
   - `4x4` 完整二维 `LFNST -> 列IDCT2 -> 行IDCT2` 已落地并通过 directed 联调
   - 这条二维链路的轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
-  - 下一步进入通用 `transpose buffer` 和更大块型扩展
+  - 通用 `transpose buffer` 已抽成独立可综合模块
+  - `4x4` 二维链路已改成复用 `transpose buffer`
+  - 下一步进入更大块型和 `DCT8 / DST7` 扩展
 
 ## 目录说明
 

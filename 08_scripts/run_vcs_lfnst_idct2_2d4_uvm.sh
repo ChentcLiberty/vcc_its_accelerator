@@ -16,6 +16,7 @@ cd "${BUILD_DIR}"
   -Mdir=./csrc \
   "${ROOT_DIR}/05_rtl/lfnst_core.v" \
   "${ROOT_DIR}/05_rtl/idct2_1d_core.v" \
+  "${ROOT_DIR}/05_rtl/its_transpose_buffer.v" \
   "${ROOT_DIR}/05_rtl/lfnst_idct2_col4_core.v" \
   "${ROOT_DIR}/05_rtl/lfnst_idct2_2d4_core.v" \
   "${ROOT_DIR}/06_tb/uvm_lfnst_idct2_2d4/lfnst_idct2_2d4_if.sv" \

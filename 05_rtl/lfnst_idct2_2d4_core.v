@@ -55,9 +55,15 @@ module lfnst_idct2_2d4_core #(
     reg [5:0] out_row_base_r;
 
     reg signed [DATA_W-1:0] x_bar_in_r [0:15];
-    reg signed [MID_W-1:0]  col_block_r [0:15];
     reg signed [MID_W-1:0]  row_x_r [0:63];
     reg signed [OUT_W-1:0]  final_block_r [0:15];
+
+    wire transpose_clear;
+    wire [6:0] transpose_wr_row_idx;
+    wire signed [MID_W-1:0] transpose_rd_data_0;
+    wire signed [MID_W-1:0] transpose_rd_data_1;
+    wire signed [MID_W-1:0] transpose_rd_data_2;
+    wire signed [MID_W-1:0] transpose_rd_data_3;
 
     wire col_chain_in_ready;
     wire col_chain_out_valid;
@@ -91,6 +97,8 @@ module lfnst_idct2_2d4_core #(
     assign out_row_base = out_row_base_r;
     assign out_last = (state_r == S_STREAM_OUT) && (out_row_base_r == 6'd12);
     assign busy = (state_r != S_IDLE);
+    assign transpose_clear = (state_r == S_IDLE) && start;
+    assign transpose_wr_row_idx = {5'd0, col_chain_out_row_base[5:2]};
 
     lfnst_idct2_col4_core #(
         .DATA_W(DATA_W),
@@ -220,6 +228,31 @@ module lfnst_idct2_2d4_core #(
         .busy()
     );
 
+    its_transpose_buffer #(
+        .DATA_W(MID_W),
+        .MAX_DIM(64)
+    ) u_transpose_buffer (
+        .clk(clk),
+        .rst_n(rst_n),
+        .clear(transpose_clear),
+        .n_rows(7'd4),
+        .n_cols(7'd4),
+        .wr_valid(col_chain_out_valid),
+        .wr_row_idx(transpose_wr_row_idx),
+        .wr_col_base(7'd0),
+        .wr_data_0(col_chain_out_data_0),
+        .wr_data_1(col_chain_out_data_1),
+        .wr_data_2(col_chain_out_data_2),
+        .wr_data_3(col_chain_out_data_3),
+        .rd_transpose(1'b0),
+        .rd_major_idx({5'd0, row_idx_r}),
+        .rd_minor_base(7'd0),
+        .rd_data_0(transpose_rd_data_0),
+        .rd_data_1(transpose_rd_data_1),
+        .rd_data_2(transpose_rd_data_2),
+        .rd_data_3(transpose_rd_data_3)
+    );
+
     always @(*) begin
         out_data_0 = final_block_r[out_row_base_r + 0];
         out_data_1 = final_block_r[out_row_base_r + 1];
@@ -237,7 +270,6 @@ module lfnst_idct2_2d4_core #(
             done               <= 1'b0;
             for (idx = 0; idx < 16; idx = idx + 1) begin
                 x_bar_in_r[idx]   <= {DATA_W{1'b0}};
-                col_block_r[idx]  <= {MID_W{1'b0}};
                 final_block_r[idx] <= {OUT_W{1'b0}};
             end
             for (idx = 0; idx < 64; idx = idx + 1) begin
@@ -277,12 +309,6 @@ module lfnst_idct2_2d4_core #(
                 end
 
                 S_RUN_COL: begin
-                    if (col_chain_out_valid) begin
-                        col_block_r[col_chain_out_row_base + 0] <= col_chain_out_data_0;
-                        col_block_r[col_chain_out_row_base + 1] <= col_chain_out_data_1;
-                        col_block_r[col_chain_out_row_base + 2] <= col_chain_out_data_2;
-                        col_block_r[col_chain_out_row_base + 3] <= col_chain_out_data_3;
-                    end
                     if (col_chain_done) begin
                         row_idx_r <= 2'd0;
                         state_r <= S_PREP_ROW;
@@ -293,10 +319,10 @@ module lfnst_idct2_2d4_core #(
                     for (idx = 0; idx < 64; idx = idx + 1) begin
                         row_x_r[idx] <= {MID_W{1'b0}};
                     end
-                    row_x_r[0] <= col_block_r[{row_idx_r, 2'b00} + 0];
-                    row_x_r[1] <= col_block_r[{row_idx_r, 2'b00} + 1];
-                    row_x_r[2] <= col_block_r[{row_idx_r, 2'b00} + 2];
-                    row_x_r[3] <= col_block_r[{row_idx_r, 2'b00} + 3];
+                    row_x_r[0] <= transpose_rd_data_0;
+                    row_x_r[1] <= transpose_rd_data_1;
+                    row_x_r[2] <= transpose_rd_data_2;
+                    row_x_r[3] <= transpose_rd_data_3;
                     state_r <= S_START_ROW;
                 end
 
