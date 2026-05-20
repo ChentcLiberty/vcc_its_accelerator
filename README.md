@@ -29,6 +29,8 @@
   - `4x4` 的 `LFNST -> 列向 IDCT2` 子链路已落地并通过 directed 联调
   - 这条子链路的轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
   - `4x4` 完整二维 `LFNST -> 列IDCT2 -> 行IDCT2` 已落地并通过 directed 联调
+  - 这条二维链路的轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
+  - 下一步进入通用 `transpose buffer` 和更大块型扩展
 
 ## 目录说明
 

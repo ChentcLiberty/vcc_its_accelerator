@@ -57,12 +57,20 @@
 
 脚本会固定在 `/tmp/lfnst_idct2_2d4_build` 下编译和运行，避免共享目录上下文下的 `VCS` 链接问题。
 
+## 对应UVM闭环
+
+这份说明只覆盖 directed 二维闭环。
+
+对应的轻量 `UVM` 版本见：
+
+- [题1_LFNST到IDCT2二维4x4链路UVM验证说明_v1.md](./题1_LFNST到IDCT2二维4x4链路UVM验证说明_v1.md)
+- [题1_LFNST到IDCT2二维4x4链路UVM验证记录_v1.md](../09_reports/题1_LFNST到IDCT2二维4x4链路UVM验证记录_v1.md)
+
 ## 当前边界
 
 这版仍然是 directed 功能闭环版本：
 
 - 不做随机回归
-- 不做链路级 `UVM`
 - 不做最终规范化输出检查
 
 这轮目标很明确：
