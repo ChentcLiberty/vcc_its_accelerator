@@ -22,6 +22,7 @@
   - `DCT8/DST7 32-point` 当前为“附件前 16 行精确 + 后 16 行解析式补齐”
   - 通用 `ITS 1D` 核已落地，统一支持 `DCT2 / DST7 / DCT8`
   - `ITS 1D` directed 自检已通过，覆盖 `8-point / 32-point` 和一次单拍输出反压
+  - `ITS 1D` 的轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
 - `IDCT2`
   - 第一版 `1D` RTL 已落地
   - 对应的块级设计说明和验证说明已补
@@ -39,7 +40,7 @@
   - `8x8` 二维 `IDCT2` 的轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
   - `16x16` 二维 `IDCT2` 路径已落地并通过 directed 回归
   - `16x16` 二维 `IDCT2` 的轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
-  - 下一步给 `ITS 1D` 补轻量 `UVM`，并把 `DCT8 / DST7` 接进二维路径
+  - 下一步把 `DCT8 / DST7` 接进二维路径
 
 ## 目录说明
 
