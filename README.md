@@ -24,6 +24,7 @@
   - `ITS 1D` directed 自检已通过，覆盖 `8-point / 32-point` 和一次单拍输出反压
   - `ITS 1D` 的轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
   - 通用 `ITS 2D 8x8` 壳子已落地，`DCT8 8x8` 和 `DST7 8x8` 用例都已通过 directed 回归
+  - `ITS 2D 8x8` 的 `DCT8 -> DCT8` 轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
 - `IDCT2`
   - 第一版 `1D` RTL 已落地
   - 对应的块级设计说明和验证说明已补
@@ -41,7 +42,7 @@
   - `8x8` 二维 `IDCT2` 的轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
   - `16x16` 二维 `IDCT2` 路径已落地并通过 directed 回归
   - `16x16` 二维 `IDCT2` 的轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
-  - 下一步给 `ITS 2D 8x8` 加轻量 `UVM`，或者往更大块型扩
+  - 下一步给 `ITS 2D 8x8` 的 `DST7 -> DST7` 也补上轻量 `UVM`，或者往更大块型扩
 
 ## 目录说明
 
