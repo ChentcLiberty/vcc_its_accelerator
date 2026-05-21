@@ -34,7 +34,8 @@
   - `4x4` 二维链路已改成复用 `transpose buffer`
   - `transpose buffer` 已支持转置写入，并通过 directed 回归
   - `8x8` 二维 `IDCT2` 路径已落地并通过 directed 回归
-  - 下一步继续补更大块型的验证方法学，及 `DCT8 / DST7` 扩展
+  - `8x8` 二维 `IDCT2` 的轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
+  - 下一步继续扩到 `16x16`，并补 `DCT8 / DST7`
 
 ## 目录说明
 
