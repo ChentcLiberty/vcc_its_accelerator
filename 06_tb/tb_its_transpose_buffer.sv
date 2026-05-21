@@ -9,6 +9,7 @@ module tb_its_transpose_buffer;
     reg [6:0] n_rows;
     reg [6:0] n_cols;
     reg wr_valid;
+    reg wr_transpose;
     reg [6:0] wr_row_idx;
     reg [6:0] wr_col_base;
     reg signed [DATA_W-1:0] wr_data_0;
@@ -36,6 +37,7 @@ module tb_its_transpose_buffer;
         .n_rows(n_rows),
         .n_cols(n_cols),
         .wr_valid(wr_valid),
+        .wr_transpose(wr_transpose),
         .wr_row_idx(wr_row_idx),
         .wr_col_base(wr_col_base),
         .wr_data_0(wr_data_0),
@@ -65,6 +67,7 @@ module tb_its_transpose_buffer;
         begin
             @(posedge clk);
             wr_valid    <= 1'b1;
+            wr_transpose <= 1'b0;
             wr_row_idx  <= row_idx;
             wr_col_base <= col_base;
             wr_data_0   <= d0;
@@ -73,6 +76,7 @@ module tb_its_transpose_buffer;
             wr_data_3   <= d3;
             @(posedge clk);
             wr_valid    <= 1'b0;
+            wr_transpose <= 1'b0;
             wr_row_idx  <= 7'd0;
             wr_col_base <= 7'd0;
             wr_data_0   <= '0;
@@ -123,6 +127,7 @@ module tb_its_transpose_buffer;
         n_rows       = 7'd4;
         n_cols       = 7'd8;
         wr_valid     = 1'b0;
+        wr_transpose = 1'b0;
         wr_row_idx   = 7'd0;
         wr_col_base  = 7'd0;
         wr_data_0    = '0;
@@ -158,6 +163,35 @@ module tb_its_transpose_buffer;
         check_read(1'b1, 7'd7, 7'd0, 16'sd7, 16'sd17, 16'sd27, 16'sd37, "transpose_col7");
         check_read(1'b1, 7'd7, 7'd4, 16'sd0, 16'sd0, 16'sd0, 16'sd0, "transpose_oob_minor");
         check_read(1'b0, 7'd3, 7'd8, 16'sd0, 16'sd0, 16'sd0, 16'sd0, "row_oob_minor");
+
+        clear <= 1'b1;
+        @(posedge clk);
+        clear <= 1'b0;
+
+        @(posedge clk);
+        wr_valid     <= 1'b1;
+        wr_transpose <= 1'b1;
+        wr_row_idx   <= 7'd2;
+        wr_col_base  <= 7'd0;
+        wr_data_0    <= 16'sd100;
+        wr_data_1    <= 16'sd110;
+        wr_data_2    <= 16'sd120;
+        wr_data_3    <= 16'sd130;
+        @(posedge clk);
+        wr_valid     <= 1'b0;
+        wr_transpose <= 1'b0;
+        wr_row_idx   <= 7'd0;
+        wr_col_base  <= 7'd0;
+        wr_data_0    <= '0;
+        wr_data_1    <= '0;
+        wr_data_2    <= '0;
+        wr_data_3    <= '0;
+
+        check_read(1'b1, 7'd2, 7'd0, 16'sd100, 16'sd110, 16'sd120, 16'sd130, "transpose_write_readback");
+        check_read(1'b0, 7'd0, 7'd0, 16'sd0, 16'sd0, 16'sd100, 16'sd0, "transpose_write_row0");
+        check_read(1'b0, 7'd1, 7'd0, 16'sd0, 16'sd0, 16'sd110, 16'sd0, "transpose_write_row1");
+        check_read(1'b0, 7'd2, 7'd0, 16'sd0, 16'sd0, 16'sd120, 16'sd0, "transpose_write_row2");
+        check_read(1'b0, 7'd3, 7'd0, 16'sd0, 16'sd0, 16'sd130, 16'sd0, "transpose_write_row3");
 
         clear <= 1'b1;
         @(posedge clk);

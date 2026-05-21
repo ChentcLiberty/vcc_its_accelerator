@@ -238,6 +238,7 @@ module lfnst_idct2_2d4_core #(
         .n_rows(7'd4),
         .n_cols(7'd4),
         .wr_valid(col_chain_out_valid),
+        .wr_transpose(1'b0),
         .wr_row_idx(transpose_wr_row_idx),
         .wr_col_base(7'd0),
         .wr_data_0(col_chain_out_data_0),

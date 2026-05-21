@@ -8,6 +8,7 @@ module its_transpose_buffer #(
     input  wire [6:0]               n_rows,
     input  wire [6:0]               n_cols,
     input  wire                     wr_valid,
+    input  wire                     wr_transpose,
     input  wire [6:0]               wr_row_idx,
     input  wire [6:0]               wr_col_base,
     input  wire signed [DATA_W-1:0] wr_data_0,
@@ -72,17 +73,32 @@ module its_transpose_buffer #(
                     mem_r[idx] <= {DATA_W{1'b0}};
                 end
             end else if (wr_valid) begin
-                if ((wr_row_idx < n_rows) && (wr_col_base + 7'd0 < n_cols)) begin
-                    mem_r[(wr_row_idx * MAX_DIM) + wr_col_base + 7'd0] <= wr_data_0;
-                end
-                if ((wr_row_idx < n_rows) && (wr_col_base + 7'd1 < n_cols)) begin
-                    mem_r[(wr_row_idx * MAX_DIM) + wr_col_base + 7'd1] <= wr_data_1;
-                end
-                if ((wr_row_idx < n_rows) && (wr_col_base + 7'd2 < n_cols)) begin
-                    mem_r[(wr_row_idx * MAX_DIM) + wr_col_base + 7'd2] <= wr_data_2;
-                end
-                if ((wr_row_idx < n_rows) && (wr_col_base + 7'd3 < n_cols)) begin
-                    mem_r[(wr_row_idx * MAX_DIM) + wr_col_base + 7'd3] <= wr_data_3;
+                if (!wr_transpose) begin
+                    if ((wr_row_idx < n_rows) && (wr_col_base + 7'd0 < n_cols)) begin
+                        mem_r[(wr_row_idx * MAX_DIM) + wr_col_base + 7'd0] <= wr_data_0;
+                    end
+                    if ((wr_row_idx < n_rows) && (wr_col_base + 7'd1 < n_cols)) begin
+                        mem_r[(wr_row_idx * MAX_DIM) + wr_col_base + 7'd1] <= wr_data_1;
+                    end
+                    if ((wr_row_idx < n_rows) && (wr_col_base + 7'd2 < n_cols)) begin
+                        mem_r[(wr_row_idx * MAX_DIM) + wr_col_base + 7'd2] <= wr_data_2;
+                    end
+                    if ((wr_row_idx < n_rows) && (wr_col_base + 7'd3 < n_cols)) begin
+                        mem_r[(wr_row_idx * MAX_DIM) + wr_col_base + 7'd3] <= wr_data_3;
+                    end
+                end else begin
+                    if ((wr_row_idx < n_cols) && (wr_col_base + 7'd0 < n_rows)) begin
+                        mem_r[((wr_col_base + 7'd0) * MAX_DIM) + wr_row_idx] <= wr_data_0;
+                    end
+                    if ((wr_row_idx < n_cols) && (wr_col_base + 7'd1 < n_rows)) begin
+                        mem_r[((wr_col_base + 7'd1) * MAX_DIM) + wr_row_idx] <= wr_data_1;
+                    end
+                    if ((wr_row_idx < n_cols) && (wr_col_base + 7'd2 < n_rows)) begin
+                        mem_r[((wr_col_base + 7'd2) * MAX_DIM) + wr_row_idx] <= wr_data_2;
+                    end
+                    if ((wr_row_idx < n_cols) && (wr_col_base + 7'd3 < n_rows)) begin
+                        mem_r[((wr_col_base + 7'd3) * MAX_DIM) + wr_row_idx] <= wr_data_3;
+                    end
                 end
             end
         end
