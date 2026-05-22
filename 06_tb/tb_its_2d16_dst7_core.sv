@@ -1,10 +1,10 @@
-module tb_its_2d16_core;
+module tb_its_2d16_dst7_core;
 
     localparam int DATA_W = 16;
     localparam int OUT_W  = 64;
-    localparam int TR_DCT8 = 2;
-    localparam string FULL_MEM = "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/its_2d16_dct8_full_expected.memh";
-    localparam string SPARSE_MEM = "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/its_2d16_dct8_sparse_expected.memh";
+    localparam int TR_DST7 = 1;
+    localparam string FULL_MEM = "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/its_2d16_dst7_full_expected.memh";
+    localparam string SPARSE_MEM = "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/its_2d16_dst7_sparse_expected.memh";
 
     reg clk;
     reg rst_n;
@@ -38,8 +38,8 @@ module tb_its_2d16_core;
     integer error_count;
 
     its_2d16_core #(
-        .ROW_TR_TYPE(TR_DCT8),
-        .COL_TR_TYPE(TR_DCT8),
+        .ROW_TR_TYPE(TR_DST7),
+        .COL_TR_TYPE(TR_DST7),
         .MEM_FILE("/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/05_rtl/its_1d_tables.memh")
     ) dut (
         .clk(clk),
@@ -195,11 +195,11 @@ module tb_its_2d16_core;
         run_case("sparse8_case", 7'd8, 7'd8, expected_sparse, -1);
 
         if (error_count != 0) begin
-            $display("FAIL tb_its_2d16_core errors=%0d", error_count);
+            $display("FAIL tb_its_2d16_dst7_core errors=%0d", error_count);
             $fatal;
         end
 
-        $display("PASS tb_its_2d16_core");
+        $display("PASS tb_its_2d16_dst7_core");
         $finish;
     end
 
