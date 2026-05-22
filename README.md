@@ -31,6 +31,7 @@
   - `ITS 2D 16x16` 的 `DCT8 -> DCT8` 轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
   - `ITS 2D 16x16` 的 `DST7 -> DST7` 轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
   - `ITS 2D 16x16` 的 `DCT8/DST7` 两条 `UVM` 路径已进一步收成共享验证骨架
+  - 官方接口顶层第一版已落地，已打通 `it_info / it_data_addr / it_data_in_req / it_data_out[39:0] / it_done`
 - `IDCT2`
   - 第一版 `1D` RTL 已落地
   - 对应的块级设计说明和验证说明已补
@@ -89,6 +90,19 @@
 2. 再做 `1D IDCT2 / IDCT8 / IDST7` 核
 3. 再包成 `2D ITS top`
 4. 最后补齐所有块大小、模式组合和吞吐优化
+
+## 当前顶层状态
+
+- 第一版官方接口顶层： [its_top_official_if_stage1.v](./05_rtl/its_top_official_if_stage1.v)
+- 当前已支持：
+  - `4x4 DCT2 + optional LFNST`
+  - `8x8 DCT2 / DST7 / DCT8`
+  - `16x16 DCT2 / DST7 / DCT8`
+- 当前限制：
+  - 只支持平方块
+  - `8x8/16x16` 当前要求 `tr_type_hor == tr_type_ver`
+  - `8x8/16x16` 当前要求 `lfnst_idx = 0`
+  - `32x32/64x64` 还没接进这版顶层
 
 ## 关键资料
 
