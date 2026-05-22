@@ -32,6 +32,12 @@
   - `ITS 2D 16x16` 的 `DST7 -> DST7` 轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
   - `ITS 2D 16x16` 的 `DCT8/DST7` 两条 `UVM` 路径已进一步收成共享验证骨架
   - 官方接口顶层第一版已落地，已打通 `it_info / it_data_addr / it_data_in_req / it_data_out[39:0] / it_done`
+  - 官方接口顶层第一版 directed 已扩到：
+    - `4x4 DCT2 + LFNST`
+    - `8x8 DCT8`
+    - `16x16 DCT8`
+    - unsupported 模式
+    - 一次 `it_data_out_req` 单拍反压
 - `IDCT2`
   - 第一版 `1D` RTL 已落地
   - 对应的块级设计说明和验证说明已补
@@ -103,6 +109,7 @@
   - `8x8/16x16` 当前要求 `tr_type_hor == tr_type_ver`
   - `8x8/16x16` 当前要求 `lfnst_idx = 0`
   - `32x32/64x64` 还没接进这版顶层
+  - 这版顶层当前还没有配套 `UVM`，目前是增强版 directed smoke
 
 ## 关键资料
 

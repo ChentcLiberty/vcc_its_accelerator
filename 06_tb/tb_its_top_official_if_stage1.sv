@@ -2,6 +2,7 @@ module tb_its_top_official_if_stage1;
 
     localparam int DATA_W = 16;
     localparam int OUT_W  = 64;
+    localparam string DCT8_16_FULL_MEM = "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/its_2d16_dct8_full_expected.memh";
 
     reg clk;
     reg rst_n;
@@ -16,6 +17,7 @@ module tb_its_top_official_if_stage1;
     wire it_data_out_vld;
     reg  it_data_out_req;
     wire it_done;
+    reg  it_done_seen;
 
     reg core4_start;
     reg [1:0] core4_lfnst_set;
@@ -48,6 +50,7 @@ module tb_its_top_official_if_stage1;
     integer idx;
     integer error_count;
     integer group_idx;
+    reg signed [OUT_W-1:0] expected16_full [0:255];
 
     its_top_official_if_stage1 #(
         .LFNST_MEM_FILE("/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/05_rtl/lfnst_tables.memh"),
@@ -133,6 +136,14 @@ module tb_its_top_official_if_stage1;
 
     initial clk = 1'b0;
     always #5 clk = ~clk;
+
+    always @(posedge clk or negedge rst_n) begin
+        if (!rst_n) begin
+            it_done_seen <= 1'b0;
+        end else if (it_done) begin
+            it_done_seen <= 1'b1;
+        end
+    end
 
     function [3:0] lfnst_scan_addr_4x4;
         input [3:0] scan_idx;
@@ -222,6 +233,12 @@ module tb_its_top_official_if_stage1;
         end
     endtask
 
+    task automatic load_expected_mem;
+        begin
+            $readmemh(DCT8_16_FULL_MEM, expected16_full);
+        end
+    endtask
+
     task automatic send_info(input [21:0] info_v);
         begin
             @(posedge clk);
@@ -269,6 +286,7 @@ module tb_its_top_official_if_stage1;
     task automatic run_case_4x4_lfnst;
         reg [39:0] exp_pack;
         begin
+            it_done_seen = 1'b0;
             load_demo_4x4_raster();
             core4_lfnst_set = 2'd0;
             core4_lfnst_idx = 2'd1;
@@ -296,7 +314,7 @@ module tb_its_top_official_if_stage1;
                 @(posedge clk);
             end
 
-            wait (it_done === 1'b1);
+            wait (it_done_seen === 1'b1);
             @(posedge clk);
         end
     endtask
@@ -304,6 +322,7 @@ module tb_its_top_official_if_stage1;
     task automatic run_case_8x8_dct8;
         reg [39:0] exp_pack;
         begin
+            it_done_seen = 1'b0;
             load_demo_8x8_raster();
             core8_non_zero_cols = 7'd8;
             core8_non_zero_rows = 7'd8;
@@ -331,7 +350,84 @@ module tb_its_top_official_if_stage1;
                 @(posedge clk);
             end
 
-            wait (it_done === 1'b1);
+            wait (it_done_seen === 1'b1);
+            @(posedge clk);
+        end
+    endtask
+
+    task automatic run_case_16x16_dct8_with_backpressure;
+        reg [39:0] exp_pack;
+        integer accepted_groups;
+        begin
+            it_done_seen = 1'b0;
+            send_info({2'd0, 2'd0, 2'd2, 2'd2, 7'd16, 7'd16});
+            for (idx = 0; idx < 256; idx = idx + 1) begin
+                send_coeff(idx + 1, idx[11:0], (idx == 255));
+            end
+
+            accepted_groups = 0;
+            while (accepted_groups < 64) begin
+                @(posedge clk);
+                if (it_data_out_vld === 1'b1) begin
+                    exp_pack = pack4x10(
+                        expected16_full[accepted_groups * 4 + 0],
+                        expected16_full[accepted_groups * 4 + 1],
+                        expected16_full[accepted_groups * 4 + 2],
+                        expected16_full[accepted_groups * 4 + 3]
+                    );
+                    if (it_data_out !== exp_pack) begin
+                        $display(
+                            "ERR 16x16 top packed output group=%0d got %h exp %h",
+                            accepted_groups,
+                            it_data_out,
+                            exp_pack
+                        );
+                        error_count = error_count + 1;
+                    end
+
+                    if (accepted_groups == 8) begin
+                        it_data_out_req <= 1'b0;
+                        @(posedge clk);
+                        if (it_data_out_vld !== 1'b0) begin
+                            $display("ERR top output valid asserted while out_req is low");
+                            error_count = error_count + 1;
+                        end
+                        it_data_out_req <= 1'b1;
+                    end
+
+                    accepted_groups = accepted_groups + 1;
+                end
+            end
+
+            wait (it_done_seen === 1'b1);
+            @(posedge clk);
+        end
+    endtask
+
+    task automatic run_case_unsupported_mode;
+        integer wait_cycles;
+        begin
+            it_done_seen = 1'b0;
+            send_info({2'd0, 2'd0, 2'd0, 2'd0, 7'd16, 7'd8});
+            for (idx = 0; idx < 4; idx = idx + 1) begin
+                send_coeff(idx + 1, idx[11:0], (idx == 3));
+            end
+
+            wait_cycles = 0;
+            while ((it_done_seen !== 1'b1) && (wait_cycles < 16)) begin
+                if (it_data_out_vld === 1'b1) begin
+                    $display("ERR unsupported mode produced output");
+                    error_count = error_count + 1;
+                end
+                wait_cycles = wait_cycles + 1;
+                @(posedge clk);
+            end
+
+            if (it_done_seen !== 1'b1) begin
+                $display("ERR unsupported mode did not raise done in time");
+                error_count = error_count + 1;
+            end
+
             @(posedge clk);
         end
     endtask
@@ -342,6 +438,7 @@ module tb_its_top_official_if_stage1;
         error_count = 0;
         it_data_out_req = 1'b1;
         clear_inputs();
+        load_expected_mem();
         for (idx = 0; idx < 16; idx = idx + 1) begin
             core4_xbar[idx] = '0;
         end
@@ -355,6 +452,8 @@ module tb_its_top_official_if_stage1;
 
         run_case_4x4_lfnst();
         run_case_8x8_dct8();
+        run_case_16x16_dct8_with_backpressure();
+        run_case_unsupported_mode();
 
         if (error_count != 0) begin
             $display("FAIL tb_its_top_official_if_stage1 errors=%0d", error_count);
