@@ -12,6 +12,7 @@
 
 - RTL： [its_2d16_core.v](../05_rtl/its_2d16_core.v)
 - interface： [its_2d16_if.sv](../06_tb/uvm_its_2d16/its_2d16_if.sv)
+- 共享 UVM package： [its_2d16_uvm_common_pkg.sv](../06_tb/uvm_its_2d16/its_2d16_uvm_common_pkg.sv)
 - UVM package： [its_2d16_uvm_pkg.sv](../06_tb/uvm_its_2d16/its_2d16_uvm_pkg.sv)
 - UVM top： [tb_its_2d16_uvm_top.sv](../06_tb/uvm_its_2d16/tb_its_2d16_uvm_top.sv)
 - 运行脚本： [run_vcs_its_2d16_uvm.sh](../08_scripts/run_vcs_its_2d16_uvm.sh)
@@ -38,6 +39,7 @@
 
 ## UVM结构
 
+- 共享 `case/driver/monitor/scoreboard/agent/env/base sequence/base test`
 - `driver`
 - `monitor`
 - `scoreboard`

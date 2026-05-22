@@ -30,6 +30,7 @@
   - `ITS 2D 16x16` 的 `DST7 16x16` directed 回归也已通过
   - `ITS 2D 16x16` 的 `DCT8 -> DCT8` 轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
   - `ITS 2D 16x16` 的 `DST7 -> DST7` 轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
+  - `ITS 2D 16x16` 的 `DCT8/DST7` 两条 `UVM` 路径已进一步收成共享验证骨架
 - `IDCT2`
   - 第一版 `1D` RTL 已落地
   - 对应的块级设计说明和验证说明已补
@@ -47,7 +48,7 @@
   - `8x8` 二维 `IDCT2` 的轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
   - `16x16` 二维 `IDCT2` 路径已落地并通过 directed 回归
   - `16x16` 二维 `IDCT2` 的轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
-  - 下一步把 `ITS 2D 16x16` 的 `DCT8 / DST7` 两条 `UVM` 路径进一步抽成更统一的共享验证骨架
+  - 下一步把这套共享 `16x16 UVM` 骨架往更大块型或更多 transform 组合继续复用
 
 ## 目录说明
 

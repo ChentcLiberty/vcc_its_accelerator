@@ -18,6 +18,7 @@ cd "${BUILD_DIR}"
   "${ROOT_DIR}/05_rtl/its_transpose_buffer.v" \
   "${ROOT_DIR}/05_rtl/its_2d16_core.v" \
   "${ROOT_DIR}/06_tb/uvm_its_2d16/its_2d16_if.sv" \
+  "${ROOT_DIR}/06_tb/uvm_its_2d16/its_2d16_uvm_common_pkg.sv" \
   "${ROOT_DIR}/06_tb/uvm_its_2d16_dst7/its_2d16_dst7_uvm_pkg.sv" \
   "${ROOT_DIR}/06_tb/uvm_its_2d16_dst7/tb_its_2d16_dst7_uvm_top.sv" \
   -o "${SIMV}"
