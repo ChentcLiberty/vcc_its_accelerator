@@ -5,8 +5,16 @@ package its_top_official_if_stage1_uvm_pkg;
 
     localparam string EXP_4X4_LFNST_FILE =
         "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_4x4_lfnst_expected.txt";
+    localparam string EXP_8X8_DCT2_FILE =
+        "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_8x8_dct2_expected.txt";
+    localparam string EXP_8X8_DST7_FILE =
+        "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_8x8_dst7_expected.txt";
     localparam string EXP_8X8_DCT8_FILE =
         "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_8x8_dct8_expected.txt";
+    localparam string EXP_16X16_DCT2_FILE =
+        "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_16x16_dct2_expected.txt";
+    localparam string EXP_16X16_DST7_FILE =
+        "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_16x16_dst7_expected.txt";
     localparam string EXP_16X16_DCT8_FILE =
         "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_16x16_dct8_expected.txt";
 
@@ -147,6 +155,38 @@ package its_top_official_if_stage1_uvm_pkg;
         end
     endfunction
 
+    function automatic its_top_stage1_case build_8x8_dct2_case();
+        its_top_stage1_case c;
+        int signed expected[];
+        begin
+            c = its_top_stage1_case::type_id::create("case_8x8_dct2");
+            c.case_name = "case_8x8_dct2";
+            c.info = {2'd0, 2'd0, 2'd0, 2'd0, 7'd8, 7'd8};
+            fill_dense_input(64, c.input_values, c.input_addrs);
+            load_expected_file(EXP_8X8_DCT2_FILE, expected);
+            c.expected = new[expected.size()];
+            foreach (expected[i]) c.expected[i] = expected[i];
+            c.done_timeout_cycles = 64;
+            return c;
+        end
+    endfunction
+
+    function automatic its_top_stage1_case build_8x8_dst7_case();
+        its_top_stage1_case c;
+        int signed expected[];
+        begin
+            c = its_top_stage1_case::type_id::create("case_8x8_dst7");
+            c.case_name = "case_8x8_dst7";
+            c.info = {2'd0, 2'd0, 2'd1, 2'd1, 7'd8, 7'd8};
+            fill_dense_input(64, c.input_values, c.input_addrs);
+            load_expected_file(EXP_8X8_DST7_FILE, expected);
+            c.expected = new[expected.size()];
+            foreach (expected[i]) c.expected[i] = expected[i];
+            c.done_timeout_cycles = 64;
+            return c;
+        end
+    endfunction
+
     function automatic its_top_stage1_case build_16x16_dct8_case();
         its_top_stage1_case c;
         int signed expected[];
@@ -159,6 +199,38 @@ package its_top_official_if_stage1_uvm_pkg;
             c.expected = new[expected.size()];
             foreach (expected[i]) c.expected[i] = expected[i];
             c.stall_after_group = 9;
+            c.done_timeout_cycles = 160;
+            return c;
+        end
+    endfunction
+
+    function automatic its_top_stage1_case build_16x16_dct2_case();
+        its_top_stage1_case c;
+        int signed expected[];
+        begin
+            c = its_top_stage1_case::type_id::create("case_16x16_dct2");
+            c.case_name = "case_16x16_dct2";
+            c.info = {2'd0, 2'd0, 2'd0, 2'd0, 7'd16, 7'd16};
+            fill_dense_input(256, c.input_values, c.input_addrs);
+            load_expected_file(EXP_16X16_DCT2_FILE, expected);
+            c.expected = new[expected.size()];
+            foreach (expected[i]) c.expected[i] = expected[i];
+            c.done_timeout_cycles = 160;
+            return c;
+        end
+    endfunction
+
+    function automatic its_top_stage1_case build_16x16_dst7_case();
+        its_top_stage1_case c;
+        int signed expected[];
+        begin
+            c = its_top_stage1_case::type_id::create("case_16x16_dst7");
+            c.case_name = "case_16x16_dst7";
+            c.info = {2'd0, 2'd0, 2'd1, 2'd1, 7'd16, 7'd16};
+            fill_dense_input(256, c.input_values, c.input_addrs);
+            load_expected_file(EXP_16X16_DST7_FILE, expected);
+            c.expected = new[expected.size()];
+            foreach (expected[i]) c.expected[i] = expected[i];
             c.done_timeout_cycles = 160;
             return c;
         end
@@ -452,7 +524,11 @@ package its_top_official_if_stage1_uvm_pkg;
 
         task body();
             send_case(build_4x4_lfnst_case());
+            send_case(build_8x8_dct2_case());
+            send_case(build_8x8_dst7_case());
             send_case(build_8x8_dct8_case());
+            send_case(build_16x16_dct2_case());
+            send_case(build_16x16_dst7_case());
             send_case(build_16x16_dct8_case());
             send_case(build_unsupported_case());
         endtask

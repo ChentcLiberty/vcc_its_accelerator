@@ -41,7 +41,11 @@
   - 官方接口顶层第一版轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
   - 官方接口顶层 `UVM` 当前覆盖：
     - `4x4 DCT2 + LFNST`
+    - `8x8 DCT2`
+    - `8x8 DST7`
     - `8x8 DCT8`
+    - `16x16 DCT2`
+    - `16x16 DST7`
     - `16x16 DCT8`
     - unsupported 模式
 - `IDCT2`
@@ -115,7 +119,7 @@
   - `8x8/16x16` 当前要求 `tr_type_hor == tr_type_ver`
   - `8x8/16x16` 当前要求 `lfnst_idx = 0`
   - `32x32/64x64` 还没接进这版顶层
-  - 配套 `UVM` 当前只覆盖 stage1 子集，不是完整模式矩阵
+  - 配套 `UVM` 当前已经覆盖 stage1 已支持模式全集，但还不是完整赛题模式矩阵
 
 ## 关键资料
 

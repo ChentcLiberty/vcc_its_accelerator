@@ -33,20 +33,28 @@
 
 - [gen_official_if_stage1_expected.py](../08_scripts/gen_official_if_stage1_expected.py)
 
-当前生成三组 stage1 golden：
+当前生成七组 stage1 golden：
 
 1. `4x4 DCT2 + LFNST`
-2. `8x8 DCT8`
-3. `16x16 DCT8`
+2. `8x8 DCT2`
+3. `8x8 DST7`
+4. `8x8 DCT8`
+5. `16x16 DCT2`
+6. `16x16 DST7`
+7. `16x16 DCT8`
 
 输出文件都放在 [06_tb/data](../06_tb/data) 下，内容是顶层 `10-bit` 饱和后的逐点期望值。
 
 ## 当前 case
 
 1. `case_4x4_lfnst`
-2. `case_8x8_dct8`
-3. `case_16x16_dct8`
-4. `case_unsupported`
+2. `case_8x8_dct2`
+3. `case_8x8_dst7`
+4. `case_8x8_dct8`
+5. `case_16x16_dct2`
+6. `case_16x16_dst7`
+7. `case_16x16_dct8`
+8. `case_unsupported`
 
 其中 `case_16x16_dct8` 带一组 `out_req` 单拍反压。
 
@@ -58,17 +66,17 @@
 
 ## 当前边界
 
-这版 `UVM` 仍然只覆盖官方接口顶层第一版已支持的子集：
+这版 `UVM` 现在已经覆盖官方接口顶层第一版的已支持模式子集：
 
 - `4x4 DCT2 + LFNST`
+- `8x8 DCT2`
+- `8x8 DST7`
 - `8x8 DCT8`
+- `16x16 DCT2`
+- `16x16 DST7`
 - `16x16 DCT8`
 - unsupported 模式
 
 还没有覆盖：
 
-- `8x8 DCT2`
-- `8x8 DST7`
-- `16x16 DCT2`
-- `16x16 DST7`
 - 更复杂的多次反压或乱序输入场景

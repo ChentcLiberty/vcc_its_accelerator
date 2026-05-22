@@ -40,13 +40,17 @@ def gen_4x4_lfnst(lfnst_db: dict, transform_db: dict) -> List[int]:
 
 
 def gen_2d_dct8(size: int, transform_db: dict) -> List[int]:
+    return gen_2d_same_tr(size=size, tr_name="dct8", transform_db=transform_db)
+
+
+def gen_2d_same_tr(size: int, tr_name: str, transform_db: dict) -> List[int]:
     flat = build_demo_flat(size)
     matrix = build_matrix_from_flat(flat, size)
     out = apply_its_2d(
         matrix=matrix,
         db=transform_db,
-        row_tr_type="dct8",
-        col_tr_type="dct8",
+        row_tr_type=tr_name,
+        col_tr_type=tr_name,
         non_zero_cols=size,
         non_zero_rows=size,
     )
@@ -66,8 +70,24 @@ def main() -> int:
         gen_4x4_lfnst(lfnst_db, transform_db),
     )
     write_dec_file(
+        out_dir / "official_if_stage1_8x8_dct2_expected.txt",
+        gen_2d_same_tr(8, "dct2", transform_db),
+    )
+    write_dec_file(
+        out_dir / "official_if_stage1_8x8_dst7_expected.txt",
+        gen_2d_same_tr(8, "dst7", transform_db),
+    )
+    write_dec_file(
         out_dir / "official_if_stage1_8x8_dct8_expected.txt",
         gen_2d_dct8(8, transform_db),
+    )
+    write_dec_file(
+        out_dir / "official_if_stage1_16x16_dct2_expected.txt",
+        gen_2d_same_tr(16, "dct2", transform_db),
+    )
+    write_dec_file(
+        out_dir / "official_if_stage1_16x16_dst7_expected.txt",
+        gen_2d_same_tr(16, "dst7", transform_db),
     )
     write_dec_file(
         out_dir / "official_if_stage1_16x16_dct8_expected.txt",
@@ -76,7 +96,11 @@ def main() -> int:
 
     print("Generated official-interface stage1 expected files:")
     print("  - official_if_stage1_4x4_lfnst_expected.txt")
+    print("  - official_if_stage1_8x8_dct2_expected.txt")
+    print("  - official_if_stage1_8x8_dst7_expected.txt")
     print("  - official_if_stage1_8x8_dct8_expected.txt")
+    print("  - official_if_stage1_16x16_dct2_expected.txt")
+    print("  - official_if_stage1_16x16_dst7_expected.txt")
     print("  - official_if_stage1_16x16_dct8_expected.txt")
     return 0
 
