@@ -20,14 +20,16 @@ module its_top_official_if_stage1 #(
     output wire                     it_done
 );
 
-    localparam [2:0] MODE_UNSUPPORTED = 3'd0;
-    localparam [2:0] MODE_4X4_DCT2    = 3'd1;
-    localparam [2:0] MODE_8X8_DCT2    = 3'd2;
-    localparam [2:0] MODE_8X8_DST7    = 3'd3;
-    localparam [2:0] MODE_8X8_DCT8    = 3'd4;
-    localparam [2:0] MODE_16X16_DCT2  = 3'd5;
-    localparam [2:0] MODE_16X16_DST7  = 3'd6;
-    localparam [2:0] MODE_16X16_DCT8  = 3'd7;
+    localparam [3:0] MODE_UNSUPPORTED = 4'd0;
+    localparam [3:0] MODE_4X4_DCT2    = 4'd1;
+    localparam [3:0] MODE_8X8_DCT2    = 4'd2;
+    localparam [3:0] MODE_8X8_DST7    = 4'd3;
+    localparam [3:0] MODE_8X8_DCT8    = 4'd4;
+    localparam [3:0] MODE_16X16_DCT2  = 4'd5;
+    localparam [3:0] MODE_16X16_DST7  = 4'd6;
+    localparam [3:0] MODE_16X16_DCT8  = 4'd7;
+    localparam [3:0] MODE_32X32_DCT2  = 4'd8;
+    localparam [3:0] MODE_64X64_DCT2  = 4'd9;
 
     localparam [1:0] TR_DCT2 = 2'd0;
     localparam [1:0] TR_DST7 = 2'd1;
@@ -40,14 +42,14 @@ module its_top_official_if_stage1 #(
     localparam [2:0] S_UNSUP_DONE   = 3'd4;
 
     reg [2:0] state_r;
-    reg [2:0] mode_r;
+    reg [3:0] mode_r;
     reg [6:0] tu_width_r;
     reg [6:0] tu_height_r;
     reg [1:0] tr_type_hor_r;
     reg [1:0] tr_type_ver_r;
     reg [1:0] lfnst_tr_set_idx_r;
     reg [1:0] lfnst_idx_r;
-    reg signed [DATA_W-1:0] tu_buf_r [0:255];
+    reg signed [DATA_W-1:0] tu_buf_r [0:4095];
 
     wire [6:0] tu_width_w  = it_info[6:0];
     wire [6:0] tu_height_w = it_info[13:7];
@@ -67,6 +69,8 @@ module its_top_official_if_stage1 #(
     wire start_16x16_dct2;
     wire start_16x16_dst7;
     wire start_16x16_dct8;
+    wire start_32x32_dct2;
+    wire start_64x64_dct2;
 
     wire sel_out_valid;
     wire sel_done;
@@ -77,6 +81,7 @@ module its_top_official_if_stage1 #(
 
     wire signed [DATA_W-1:0] x8_in [0:63];
     wire signed [DATA_W-1:0] x16_in [0:255];
+    wire signed [DATA_W-1:0] x64_in [0:4095];
 
     wire core4_in_ready;
     wire core4_out_valid;
@@ -148,6 +153,26 @@ module its_top_official_if_stage1 #(
     wire signed [63:0] core16_dct8_out_data_3;
     wire core16_dct8_done;
 
+    wire core32_dct2_in_ready;
+    wire core32_dct2_out_valid;
+    wire core32_dct2_out_last;
+    wire [11:0] core32_dct2_out_index_base;
+    wire signed [63:0] core32_dct2_out_data_0;
+    wire signed [63:0] core32_dct2_out_data_1;
+    wire signed [63:0] core32_dct2_out_data_2;
+    wire signed [63:0] core32_dct2_out_data_3;
+    wire core32_dct2_done;
+
+    wire core64_dct2_in_ready;
+    wire core64_dct2_out_valid;
+    wire core64_dct2_out_last;
+    wire [11:0] core64_dct2_out_index_base;
+    wire signed [63:0] core64_dct2_out_data_0;
+    wire signed [63:0] core64_dct2_out_data_1;
+    wire signed [63:0] core64_dct2_out_data_2;
+    wire signed [63:0] core64_dct2_out_data_3;
+    wire core64_dct2_done;
+
     integer idx;
 
     assign load_mode_w = (state_r == S_LOAD);
@@ -165,8 +190,10 @@ module its_top_official_if_stage1 #(
     assign start_16x16_dct2 = start_mode_w && (mode_r == MODE_16X16_DCT2);
     assign start_16x16_dst7 = start_mode_w && (mode_r == MODE_16X16_DST7);
     assign start_16x16_dct8 = start_mode_w && (mode_r == MODE_16X16_DCT8);
+    assign start_32x32_dct2 = start_mode_w && (mode_r == MODE_32X32_DCT2);
+    assign start_64x64_dct2 = start_mode_w && (mode_r == MODE_64X64_DCT2);
 
-    function [2:0] decode_mode;
+    function [3:0] decode_mode;
         input [6:0] width_i;
         input [6:0] height_i;
         input [1:0] tr_hor_i;
@@ -193,12 +220,20 @@ module its_top_official_if_stage1 #(
                     TR_DCT8: decode_mode = MODE_16X16_DCT8;
                     default: decode_mode = MODE_UNSUPPORTED;
                 endcase
+            end else if ((width_i == 7'd32) && (height_i == 7'd32) &&
+                         (lfnst_idx_i == 2'd0) &&
+                         (tr_hor_i == TR_DCT2) && (tr_ver_i == TR_DCT2)) begin
+                decode_mode = MODE_32X32_DCT2;
+            end else if ((width_i == 7'd64) && (height_i == 7'd64) &&
+                         (lfnst_idx_i == 2'd0) &&
+                         (tr_hor_i == TR_DCT2) && (tr_ver_i == TR_DCT2)) begin
+                decode_mode = MODE_64X64_DCT2;
             end
         end
     endfunction
 
-    function [8:0] coeff_count;
-        input [2:0] mode_i;
+    function [12:0] coeff_count;
+        input [3:0] mode_i;
         begin
             case (mode_i)
                 MODE_4X4_DCT2: coeff_count = 9'd16;
@@ -208,7 +243,9 @@ module its_top_official_if_stage1 #(
                 MODE_16X16_DCT2,
                 MODE_16X16_DST7,
                 MODE_16X16_DCT8: coeff_count = 9'd256;
-                default: coeff_count = 9'd0;
+                MODE_32X32_DCT2: coeff_count = 13'd1024;
+                MODE_64X64_DCT2: coeff_count = 13'd4096;
+                default: coeff_count = 13'd0;
             endcase
         end
     endfunction
@@ -259,6 +296,9 @@ module its_top_official_if_stage1 #(
         end
         for (g = 0; g < 256; g = g + 1) begin : GEN_X16
             assign x16_in[g] = tu_buf_r[g];
+        end
+        for (g = 0; g < 4096; g = g + 1) begin : GEN_X64
+            assign x64_in[g] = tu_buf_r[g];
         end
     endgenerate
 
@@ -440,6 +480,56 @@ module its_top_official_if_stage1 #(
         .busy()
     );
 
+    its_2d_large_core #(
+        .N_TBS(32),
+        .ROW_TR_TYPE(TR_DCT2),
+        .COL_TR_TYPE(TR_DCT2),
+        .MEM_FILE(ITS_MEM_FILE)
+    ) u_core32_dct2 (
+        .clk(clk),
+        .rst_n(rst_n),
+        .start(start_32x32_dct2),
+        .in_ready(core32_dct2_in_ready),
+        .non_zero_cols(7'd32),
+        .non_zero_rows(7'd32),
+        .x_in(x64_in),
+        .out_req(it_data_out_req),
+        .out_valid(core32_dct2_out_valid),
+        .out_last(core32_dct2_out_last),
+        .out_index_base(core32_dct2_out_index_base),
+        .out_data_0(core32_dct2_out_data_0),
+        .out_data_1(core32_dct2_out_data_1),
+        .out_data_2(core32_dct2_out_data_2),
+        .out_data_3(core32_dct2_out_data_3),
+        .done(core32_dct2_done),
+        .busy()
+    );
+
+    its_2d_large_core #(
+        .N_TBS(64),
+        .ROW_TR_TYPE(TR_DCT2),
+        .COL_TR_TYPE(TR_DCT2),
+        .MEM_FILE(ITS_MEM_FILE)
+    ) u_core64_dct2 (
+        .clk(clk),
+        .rst_n(rst_n),
+        .start(start_64x64_dct2),
+        .in_ready(core64_dct2_in_ready),
+        .non_zero_cols(7'd64),
+        .non_zero_rows(7'd64),
+        .x_in(x64_in),
+        .out_req(it_data_out_req),
+        .out_valid(core64_dct2_out_valid),
+        .out_last(core64_dct2_out_last),
+        .out_index_base(core64_dct2_out_index_base),
+        .out_data_0(core64_dct2_out_data_0),
+        .out_data_1(core64_dct2_out_data_1),
+        .out_data_2(core64_dct2_out_data_2),
+        .out_data_3(core64_dct2_out_data_3),
+        .done(core64_dct2_done),
+        .busy()
+    );
+
     assign sel_out_valid =
         (mode_r == MODE_4X4_DCT2)   ? core4_out_valid :
         (mode_r == MODE_8X8_DCT2)   ? core8_dct2_out_valid :
@@ -448,6 +538,8 @@ module its_top_official_if_stage1 #(
         (mode_r == MODE_16X16_DCT2) ? core16_dct2_out_valid :
         (mode_r == MODE_16X16_DST7) ? core16_dst7_out_valid :
         (mode_r == MODE_16X16_DCT8) ? core16_dct8_out_valid :
+        (mode_r == MODE_32X32_DCT2) ? core32_dct2_out_valid :
+        (mode_r == MODE_64X64_DCT2) ? core64_dct2_out_valid :
                                        1'b0;
 
     assign sel_done =
@@ -458,6 +550,8 @@ module its_top_official_if_stage1 #(
         (mode_r == MODE_16X16_DCT2) ? core16_dct2_done :
         (mode_r == MODE_16X16_DST7) ? core16_dst7_done :
         (mode_r == MODE_16X16_DCT8) ? core16_dct8_done :
+        (mode_r == MODE_32X32_DCT2) ? core32_dct2_done :
+        (mode_r == MODE_64X64_DCT2) ? core64_dct2_done :
                                        1'b0;
 
     assign sel_out_data_0 =
@@ -468,6 +562,8 @@ module its_top_official_if_stage1 #(
         (mode_r == MODE_16X16_DCT2) ? core16_dct2_out_data_0 :
         (mode_r == MODE_16X16_DST7) ? core16_dst7_out_data_0 :
         (mode_r == MODE_16X16_DCT8) ? core16_dct8_out_data_0 :
+        (mode_r == MODE_32X32_DCT2) ? core32_dct2_out_data_0 :
+        (mode_r == MODE_64X64_DCT2) ? core64_dct2_out_data_0 :
                                        64'sd0;
 
     assign sel_out_data_1 =
@@ -478,6 +574,8 @@ module its_top_official_if_stage1 #(
         (mode_r == MODE_16X16_DCT2) ? core16_dct2_out_data_1 :
         (mode_r == MODE_16X16_DST7) ? core16_dst7_out_data_1 :
         (mode_r == MODE_16X16_DCT8) ? core16_dct8_out_data_1 :
+        (mode_r == MODE_32X32_DCT2) ? core32_dct2_out_data_1 :
+        (mode_r == MODE_64X64_DCT2) ? core64_dct2_out_data_1 :
                                        64'sd0;
 
     assign sel_out_data_2 =
@@ -488,6 +586,8 @@ module its_top_official_if_stage1 #(
         (mode_r == MODE_16X16_DCT2) ? core16_dct2_out_data_2 :
         (mode_r == MODE_16X16_DST7) ? core16_dst7_out_data_2 :
         (mode_r == MODE_16X16_DCT8) ? core16_dct8_out_data_2 :
+        (mode_r == MODE_32X32_DCT2) ? core32_dct2_out_data_2 :
+        (mode_r == MODE_64X64_DCT2) ? core64_dct2_out_data_2 :
                                        64'sd0;
 
     assign sel_out_data_3 =
@@ -498,6 +598,8 @@ module its_top_official_if_stage1 #(
         (mode_r == MODE_16X16_DCT2) ? core16_dct2_out_data_3 :
         (mode_r == MODE_16X16_DST7) ? core16_dst7_out_data_3 :
         (mode_r == MODE_16X16_DCT8) ? core16_dct8_out_data_3 :
+        (mode_r == MODE_32X32_DCT2) ? core32_dct2_out_data_3 :
+        (mode_r == MODE_64X64_DCT2) ? core64_dct2_out_data_3 :
                                        64'sd0;
 
     always @(*) begin
@@ -517,7 +619,7 @@ module its_top_official_if_stage1 #(
             tr_type_ver_r <= 2'd0;
             lfnst_tr_set_idx_r <= 2'd0;
             lfnst_idx_r <= 2'd0;
-            for (idx = 0; idx < 256; idx = idx + 1) begin
+            for (idx = 0; idx < 4096; idx = idx + 1) begin
                 tu_buf_r[idx] <= '0;
             end
         end else begin
@@ -531,7 +633,7 @@ module its_top_official_if_stage1 #(
                         tr_type_ver_r <= tr_ver_w;
                         lfnst_tr_set_idx_r <= lfnst_set_w;
                         lfnst_idx_r <= lfnst_idx_w;
-                        for (idx = 0; idx < 256; idx = idx + 1) begin
+                        for (idx = 0; idx < 4096; idx = idx + 1) begin
                             tu_buf_r[idx] <= '0;
                         end
                         state_r <= S_LOAD;

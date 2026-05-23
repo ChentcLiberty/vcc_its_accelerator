@@ -34,7 +34,7 @@
 
 - [gen_official_if_stage1_expected.py](../08_scripts/gen_official_if_stage1_expected.py)
 
-当前生成十组 stage1 golden：
+当前生成十二组 stage1 golden：
 
 1. `4x4 DCT2 + LFNST`
 2. `8x8 DCT2`
@@ -46,6 +46,8 @@
 8. `16x16 DST7`
 9. `16x16 DCT8`
 10. `16x16 DCT8 sparse`
+11. `32x32 DCT2`
+12. `64x64 DCT2`
 
 输出文件都放在 [06_tb/data](../06_tb/data) 下，内容是顶层 `10-bit` 饱和后的逐点期望值。
 
@@ -61,7 +63,9 @@
 8. `case_16x16_dst7`
 9. `case_16x16_dct8`
 10. `case_16x16_dct8_sparse`
-11. `case_unsupported`
+11. `case_32x32_dct2`
+12. `case_64x64_dct2`
+13. `case_unsupported`
 
 其中：
 
@@ -69,6 +73,8 @@
 - `case_8x8_dst7_sparse` 验证 sparse 输入、乱序地址和两次 `out_req` 反压
 - `case_16x16_dct8` 保留一组单拍 `out_req` 反压
 - `case_16x16_dct8_sparse` 验证 sparse 输入、乱序地址和三次 `out_req` 反压
+- `case_32x32_dct2` 验证第一条大块型 `DCT2` 官方接口路径
+- `case_64x64_dct2` 验证最大块型 `DCT2` 官方接口路径
 
 ## 运行方式
 
@@ -90,11 +96,14 @@
 - `16x16 DST7`
 - `16x16 DCT8`
 - `16x16 DCT8 sparse + shuffled address`
+- `32x32 DCT2`
+- `64x64 DCT2`
 - unsupported 模式
 
 还没有覆盖：
 
-- `32x32/64x64`
 - 非平方块
 - `8x8/16x16` 下 `tr_type_hor != tr_type_ver`
-- `8x8/16x16` 下 `lfnst_idx != 0`
+- `8x8/16x16/32x32/64x64` 下 `lfnst_idx != 0`
+- `32x32` 下 `DST7/DCT8`
+- `64x64` 下除 `DCT2` 以外的模式

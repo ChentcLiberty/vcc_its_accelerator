@@ -23,6 +23,10 @@ package its_top_official_if_stage1_uvm_pkg;
         "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_16x16_dct8_expected.txt";
     localparam string EXP_16X16_DCT8_SPARSE_FILE =
         "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_16x16_dct8_sparse_expected.txt";
+    localparam string EXP_32X32_DCT2_FILE =
+        "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_32x32_dct2_expected.txt";
+    localparam string EXP_64X64_DCT2_FILE =
+        "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_64x64_dct2_expected.txt";
 
     class its_top_stage1_case extends uvm_sequence_item;
         string case_name;
@@ -253,6 +257,43 @@ package its_top_official_if_stage1_uvm_pkg;
             c.expected = new[expected.size()];
             foreach (expected[i]) c.expected[i] = expected[i];
             c.done_timeout_cycles = 160;
+            return c;
+        end
+    endfunction
+
+    function automatic its_top_stage1_case build_32x32_dct2_case();
+        its_top_stage1_case c;
+        int signed expected[];
+        begin
+            c = its_top_stage1_case::type_id::create("case_32x32_dct2");
+            c.case_name = "case_32x32_dct2";
+            c.info = {2'd0, 2'd0, 2'd0, 2'd0, 7'd32, 7'd32};
+            fill_dense_input(1024, c.input_values, c.input_addrs);
+            load_expected_file(EXP_32X32_DCT2_FILE, expected);
+            c.expected = new[expected.size()];
+            foreach (expected[i]) c.expected[i] = expected[i];
+            c.stall_groups = new[1];
+            c.stall_groups[0] = 33;
+            c.done_timeout_cycles = 560;
+            return c;
+        end
+    endfunction
+
+    function automatic its_top_stage1_case build_64x64_dct2_case();
+        its_top_stage1_case c;
+        int signed expected[];
+        begin
+            c = its_top_stage1_case::type_id::create("case_64x64_dct2");
+            c.case_name = "case_64x64_dct2";
+            c.info = {2'd0, 2'd0, 2'd0, 2'd0, 7'd64, 7'd64};
+            fill_dense_input(4096, c.input_values, c.input_addrs);
+            load_expected_file(EXP_64X64_DCT2_FILE, expected);
+            c.expected = new[expected.size()];
+            foreach (expected[i]) c.expected[i] = expected[i];
+            c.stall_groups = new[2];
+            c.stall_groups[0] = 65;
+            c.stall_groups[1] = 513;
+            c.done_timeout_cycles = 2400;
             return c;
         end
     endfunction
@@ -626,6 +667,8 @@ package its_top_official_if_stage1_uvm_pkg;
             send_case(build_16x16_dst7_case());
             send_case(build_16x16_dct8_case());
             send_case(build_16x16_dct8_sparse_case());
+            send_case(build_32x32_dct2_case());
+            send_case(build_64x64_dct2_case());
             send_case(build_unsupported_case());
         endtask
     endclass

@@ -176,6 +176,14 @@ def main() -> int:
             transform_db,
         ),
     )
+    write_dec_file(
+        out_dir / "official_if_stage1_32x32_dct2_expected.txt",
+        gen_2d_same_tr(32, "dct2", transform_db),
+    )
+    write_dec_file(
+        out_dir / "official_if_stage1_64x64_dct2_expected.txt",
+        gen_2d_same_tr(64, "dct2", transform_db),
+    )
 
     print("Generated official-interface stage1 expected files:")
     print("  - official_if_stage1_4x4_lfnst_expected.txt")
@@ -188,6 +196,8 @@ def main() -> int:
     print("  - official_if_stage1_16x16_dst7_expected.txt")
     print("  - official_if_stage1_16x16_dct8_expected.txt")
     print("  - official_if_stage1_16x16_dct8_sparse_expected.txt")
+    print("  - official_if_stage1_32x32_dct2_expected.txt")
+    print("  - official_if_stage1_64x64_dct2_expected.txt")
     return 0
 
 

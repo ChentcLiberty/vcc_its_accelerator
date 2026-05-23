@@ -26,6 +26,7 @@ cd "${BUILD_DIR}"
   "${ROOT_DIR}/05_rtl/its_transpose_buffer.v" \
   "${ROOT_DIR}/05_rtl/its_2d8_core.v" \
   "${ROOT_DIR}/05_rtl/its_2d16_core.v" \
+  "${ROOT_DIR}/05_rtl/its_2d_large_core.v" \
   "${ROOT_DIR}/05_rtl/its_top_official_if_stage1.v" \
   "${ROOT_DIR}/06_tb/uvm_its_top_official_if_stage1/its_top_official_if_stage1_if.sv" \
   "${ROOT_DIR}/06_tb/uvm_its_top_official_if_stage1/its_top_official_if_stage1_uvm_pkg.sv" \

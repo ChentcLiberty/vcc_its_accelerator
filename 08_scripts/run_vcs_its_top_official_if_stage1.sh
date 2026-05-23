@@ -23,6 +23,7 @@ cd "${BUILD_DIR}"
   "${ROOT_DIR}/05_rtl/its_transpose_buffer.v" \
   "${ROOT_DIR}/05_rtl/its_2d8_core.v" \
   "${ROOT_DIR}/05_rtl/its_2d16_core.v" \
+  "${ROOT_DIR}/05_rtl/its_2d_large_core.v" \
   "${ROOT_DIR}/05_rtl/its_top_official_if_stage1.v" \
   "${ROOT_DIR}/06_tb/tb_its_top_official_if_stage1.sv" \
   -o "${SIMV}"

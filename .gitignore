@@ -12,10 +12,12 @@ __pycache__/
 *.wlf
 *.jou
 *.pb
+*.daidir/
+*_simv
+csrc/
 
 # Editor / OS files
 .DS_Store
 Thumbs.db
 *.swp
 *.swo
-

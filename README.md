@@ -31,6 +31,8 @@
   - `ITS 2D 16x16` 的 `DCT8 -> DCT8` 轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
   - `ITS 2D 16x16` 的 `DST7 -> DST7` 轻量 `UVM` 也已落地并通过 `VCS UVM` smoke 回归
   - `ITS 2D 16x16` 的 `DCT8/DST7` 两条 `UVM` 路径已进一步收成共享验证骨架
+  - 新增通用大块型 `ITS 2D` 核 [its_2d_large_core.v](./05_rtl/its_2d_large_core.v)，当前先用于 `32x32/64x64 DCT2`
+  - 大块型 `ITS 2D` 核 directed 已通过，覆盖 `32x32 DCT2`、`64x64 DCT2` 和输出反压保持
   - 官方接口顶层第一版已落地，已打通 `it_info / it_data_addr / it_data_in_req / it_data_out[39:0] / it_done`
   - 官方接口顶层第一版 directed 已扩到：
     - `4x4 DCT2 + LFNST`
@@ -50,6 +52,8 @@
     - `16x16 DST7`
     - `16x16 DCT8`
     - `16x16 DCT8 sparse + shuffled address`
+    - `32x32 DCT2`
+    - `64x64 DCT2`
     - unsupported 模式
   - 官方接口顶层 `UVM` 已覆盖单拍和多次 `it_data_out_req` 反压场景
 - `IDCT2`
@@ -118,12 +122,14 @@
   - `4x4 DCT2 + optional LFNST`
   - `8x8 DCT2 / DST7 / DCT8`
   - `16x16 DCT2 / DST7 / DCT8`
+  - `32x32 DCT2`
+  - `64x64 DCT2`
 - 当前限制：
   - 只支持平方块
   - `8x8/16x16` 当前要求 `tr_type_hor == tr_type_ver`
-  - `8x8/16x16` 当前要求 `lfnst_idx = 0`
-  - `32x32/64x64` 还没接进这版顶层
-  - 配套 `UVM` 当前已经覆盖 stage1 已支持模式全集，并额外覆盖了 sparse 输入、乱序地址和多次输出反压，但还不是完整赛题模式矩阵
+  - `8x8/16x16/32x32/64x64` 当前要求 `lfnst_idx = 0`
+  - `32x32/64x64` 当前只接进了 `DCT2`
+  - 配套 `UVM` 当前已经覆盖 `4x4/8x8/16x16` 的 stage1 已支持模式全集，并继续扩到 `32x32/64x64 DCT2`，同时额外覆盖了 sparse 输入、乱序地址和多次输出反压，但还不是完整赛题模式矩阵
 
 ## 关键资料
 
