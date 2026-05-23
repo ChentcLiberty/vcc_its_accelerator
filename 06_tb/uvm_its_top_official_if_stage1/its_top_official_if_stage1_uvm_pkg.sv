@@ -11,12 +11,18 @@ package its_top_official_if_stage1_uvm_pkg;
         "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_8x8_dst7_expected.txt";
     localparam string EXP_8X8_DCT8_FILE =
         "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_8x8_dct8_expected.txt";
+    localparam string EXP_8X8_DCT2_SPARSE_FILE =
+        "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_8x8_dct2_sparse_expected.txt";
+    localparam string EXP_8X8_DST7_SPARSE_FILE =
+        "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_8x8_dst7_sparse_expected.txt";
     localparam string EXP_16X16_DCT2_FILE =
         "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_16x16_dct2_expected.txt";
     localparam string EXP_16X16_DST7_FILE =
         "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_16x16_dst7_expected.txt";
     localparam string EXP_16X16_DCT8_FILE =
         "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_16x16_dct8_expected.txt";
+    localparam string EXP_16X16_DCT8_SPARSE_FILE =
+        "/mnt/hgfs/wdchenaic/比赛/华为杯/02_题1_VVC_ITS/06_tb/data/official_if_stage1_16x16_dct8_sparse_expected.txt";
 
     class its_top_stage1_case extends uvm_sequence_item;
         string case_name;
@@ -25,7 +31,7 @@ package its_top_official_if_stage1_uvm_pkg;
         int unsigned input_addrs[];
         int signed expected[];
         bit expect_output;
-        int stall_after_group;
+        int stall_groups[];
         int done_timeout_cycles;
 
         `uvm_object_utils_begin(its_top_stage1_case)
@@ -35,14 +41,14 @@ package its_top_official_if_stage1_uvm_pkg;
             `uvm_field_array_int(input_addrs, UVM_DEFAULT)
             `uvm_field_array_int(expected, UVM_DEFAULT)
             `uvm_field_int(expect_output, UVM_DEFAULT)
-            `uvm_field_int(stall_after_group, UVM_DEFAULT)
+            `uvm_field_array_int(stall_groups, UVM_DEFAULT)
             `uvm_field_int(done_timeout_cycles, UVM_DEFAULT)
         `uvm_object_utils_end
 
         function new(string name = "its_top_stage1_case");
             super.new(name);
             expect_output = 1'b1;
-            stall_after_group = -1;
+            stall_groups = new[0];
             done_timeout_cycles = 64;
         endfunction
 
@@ -123,6 +129,20 @@ package its_top_official_if_stage1_uvm_pkg;
         end
     endfunction
 
+    function automatic void fill_sparse_input(
+        input int signed sparse_values[],
+        input int unsigned sparse_addrs[],
+        output int signed values[],
+        output int unsigned addrs[]
+    );
+        values = new[sparse_values.size()];
+        addrs = new[sparse_addrs.size()];
+        foreach (sparse_values[i]) begin
+            values[i] = sparse_values[i];
+            addrs[i] = sparse_addrs[i];
+        end
+    endfunction
+
     function automatic its_top_stage1_case build_4x4_lfnst_case();
         its_top_stage1_case c;
         int signed expected[];
@@ -198,7 +218,8 @@ package its_top_official_if_stage1_uvm_pkg;
             load_expected_file(EXP_16X16_DCT8_FILE, expected);
             c.expected = new[expected.size()];
             foreach (expected[i]) c.expected[i] = expected[i];
-            c.stall_after_group = 9;
+            c.stall_groups = new[1];
+            c.stall_groups[0] = 9;
             c.done_timeout_cycles = 160;
             return c;
         end
@@ -250,6 +271,79 @@ package its_top_official_if_stage1_uvm_pkg;
         end
     endfunction
 
+    function automatic its_top_stage1_case build_8x8_dct2_sparse_case();
+        its_top_stage1_case c;
+        int signed expected[];
+        int signed sparse_values[];
+        int unsigned sparse_addrs[];
+        begin
+            c = its_top_stage1_case::type_id::create("case_8x8_dct2_sparse");
+            c.case_name = "case_8x8_dct2_sparse";
+            c.info = {2'd0, 2'd0, 2'd0, 2'd0, 7'd8, 7'd8};
+            sparse_values = new[8];
+            sparse_addrs = new[8];
+            sparse_values = '{17, -11, 29, -7, 5, -13, 9, -3};
+            sparse_addrs = '{9, 0, 63, 18, 1, 45, 27, 8};
+            fill_sparse_input(sparse_values, sparse_addrs, c.input_values, c.input_addrs);
+            load_expected_file(EXP_8X8_DCT2_SPARSE_FILE, expected);
+            c.expected = new[expected.size()];
+            foreach (expected[i]) c.expected[i] = expected[i];
+            c.done_timeout_cycles = 64;
+            return c;
+        end
+    endfunction
+
+    function automatic its_top_stage1_case build_8x8_dst7_sparse_case();
+        its_top_stage1_case c;
+        int signed expected[];
+        int signed sparse_values[];
+        int unsigned sparse_addrs[];
+        begin
+            c = its_top_stage1_case::type_id::create("case_8x8_dst7_sparse");
+            c.case_name = "case_8x8_dst7_sparse";
+            c.info = {2'd0, 2'd0, 2'd1, 2'd1, 7'd8, 7'd8};
+            sparse_values = new[8];
+            sparse_addrs = new[8];
+            sparse_values = '{12, -4, 19, -15, 6, -8, 21, -5};
+            sparse_addrs = '{54, 7, 14, 28, 35, 42, 56, 3};
+            fill_sparse_input(sparse_values, sparse_addrs, c.input_values, c.input_addrs);
+            load_expected_file(EXP_8X8_DST7_SPARSE_FILE, expected);
+            c.expected = new[expected.size()];
+            foreach (expected[i]) c.expected[i] = expected[i];
+            c.stall_groups = new[2];
+            c.stall_groups[0] = 3;
+            c.stall_groups[1] = 9;
+            c.done_timeout_cycles = 64;
+            return c;
+        end
+    endfunction
+
+    function automatic its_top_stage1_case build_16x16_dct8_sparse_case();
+        its_top_stage1_case c;
+        int signed expected[];
+        int signed sparse_values[];
+        int unsigned sparse_addrs[];
+        begin
+            c = its_top_stage1_case::type_id::create("case_16x16_dct8_sparse");
+            c.case_name = "case_16x16_dct8_sparse";
+            c.info = {2'd0, 2'd0, 2'd2, 2'd2, 7'd16, 7'd16};
+            sparse_values = new[12];
+            sparse_addrs = new[12];
+            sparse_values = '{31, -17, 9, -6, 15, -12, 7, -10, 13, -3, 11, -14};
+            sparse_addrs = '{255, 0, 18, 35, 68, 85, 119, 136, 171, 188, 204, 221};
+            fill_sparse_input(sparse_values, sparse_addrs, c.input_values, c.input_addrs);
+            load_expected_file(EXP_16X16_DCT8_SPARSE_FILE, expected);
+            c.expected = new[expected.size()];
+            foreach (expected[i]) c.expected[i] = expected[i];
+            c.stall_groups = new[3];
+            c.stall_groups[0] = 4;
+            c.stall_groups[1] = 17;
+            c.stall_groups[2] = 33;
+            c.done_timeout_cycles = 160;
+            return c;
+        end
+    endfunction
+
     class its_top_stage1_driver extends uvm_driver #(its_top_stage1_case);
         `uvm_component_utils(its_top_stage1_driver)
 
@@ -295,7 +389,7 @@ package its_top_official_if_stage1_uvm_pkg;
             its_top_stage1_case exp_case;
             int unsigned consumed_groups;
             int wait_cycles;
-            bit stalled_once;
+            int stall_idx;
             bit done_seen;
 
             @(posedge vif.clk);
@@ -323,14 +417,13 @@ package its_top_official_if_stage1_uvm_pkg;
 
             if (req.expect_output) begin
                 consumed_groups = 0;
-                stalled_once = 1'b0;
+                stall_idx = 0;
                 while (consumed_groups < req.group_count()) begin
                     @(posedge vif.clk);
                     if (vif.it_data_out_vld && vif.it_data_out_req) begin
                         consumed_groups++;
-                        if (!stalled_once &&
-                            (req.stall_after_group >= 0) &&
-                            (consumed_groups == req.stall_after_group)) begin
+                        if ((stall_idx < req.stall_groups.size()) &&
+                            (consumed_groups == req.stall_groups[stall_idx])) begin
                             vif.it_data_out_req <= 1'b0;
                             @(posedge vif.clk);
                             if (vif.it_data_out_vld !== 1'b0) begin
@@ -341,7 +434,7 @@ package its_top_official_if_stage1_uvm_pkg;
                                 )
                             end
                             vif.it_data_out_req <= 1'b1;
-                            stalled_once = 1'b1;
+                            stall_idx++;
                         end
                     end
                 end
@@ -527,9 +620,12 @@ package its_top_official_if_stage1_uvm_pkg;
             send_case(build_8x8_dct2_case());
             send_case(build_8x8_dst7_case());
             send_case(build_8x8_dct8_case());
+            send_case(build_8x8_dct2_sparse_case());
+            send_case(build_8x8_dst7_sparse_case());
             send_case(build_16x16_dct2_case());
             send_case(build_16x16_dst7_case());
             send_case(build_16x16_dct8_case());
+            send_case(build_16x16_dct8_sparse_case());
             send_case(build_unsupported_case());
         endtask
     endclass

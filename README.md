@@ -44,10 +44,14 @@
     - `8x8 DCT2`
     - `8x8 DST7`
     - `8x8 DCT8`
+    - `8x8 DCT2 sparse + shuffled address`
+    - `8x8 DST7 sparse + shuffled address`
     - `16x16 DCT2`
     - `16x16 DST7`
     - `16x16 DCT8`
+    - `16x16 DCT8 sparse + shuffled address`
     - unsupported 模式
+  - 官方接口顶层 `UVM` 已覆盖单拍和多次 `it_data_out_req` 反压场景
 - `IDCT2`
   - 第一版 `1D` RTL 已落地
   - 对应的块级设计说明和验证说明已补
@@ -119,7 +123,7 @@
   - `8x8/16x16` 当前要求 `tr_type_hor == tr_type_ver`
   - `8x8/16x16` 当前要求 `lfnst_idx = 0`
   - `32x32/64x64` 还没接进这版顶层
-  - 配套 `UVM` 当前已经覆盖 stage1 已支持模式全集，但还不是完整赛题模式矩阵
+  - 配套 `UVM` 当前已经覆盖 stage1 已支持模式全集，并额外覆盖了 sparse 输入、乱序地址和多次输出反压，但还不是完整赛题模式矩阵
 
 ## 关键资料
 
